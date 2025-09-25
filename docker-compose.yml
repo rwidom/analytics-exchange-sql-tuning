@@ -1,0 +1,26 @@
+services:
+  database:
+    image: 'postgres:16-alpine3.22'
+    restart: always
+    # ports:
+    #   - 5432:5432
+    environment:
+      # please never ever do this outside of training! instead use real usernames and 
+      # properly protected secret passwords.
+      POSTGRES_USER: training
+      POSTGRES_DB: training
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      # csv files that will be imported to create database tables
+      - ${PWD}/data/:/var/lib/postgresql/imports/
+      # this sql will run when you start up the database
+      - ${PWD}/startup:/docker-entrypoint-initdb.d
+ 
+  # adminer:
+  #   image: adminer
+  #   restart: always
+  #   ports:
+  #     - 8080:8080
+ 
+volumes:
+  pgdata:
