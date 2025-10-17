@@ -45,7 +45,8 @@ FROM generate_series('2020-01-01'::date, '2025-10-22'::date, interval '1 day') A
 CROSS JOIN for_hire_vehicles cars 
 );
 
-/* for actual execution times */
+/* for actual execution times, though setting \timing after connecting to the database
+is easier in that it gets you the output from the sql statement as well. */
 CREATE OR REPLACE FUNCTION "get_sql_runtime"(
     PAR_sql TEXT,
     OUT sql_runtime REAL
