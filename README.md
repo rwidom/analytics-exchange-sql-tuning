@@ -8,8 +8,6 @@ The sample SQL and exercises in this database are run against a version of [New 
 
 To run the samples, you'll need to download this github repository, and install [Docker Desktop](https://www.docker.com/products/docker-desktop/). Then, at the command line from the same directory where you have saved this README file, type the following commands.
 
-- To download the docker image with the database software: `docker pull postgres:16-alpine3.22`
-
 - To start up the database and load sample data: `docker-compose up`
 
 - To access the database with a simple command line sql runner (`psql`): `docker run -it --rm --network analytics-exchange-sql-tuning_default postgres psql -h analytics-exchange-sql-tuning-database-1 -U training`
