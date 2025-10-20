@@ -4,7 +4,7 @@ CREATE TABLE wheelchair_access
 (
     wheelchair_accessible_key int primary key,
     wheelchair_accessible_desc varchar(10),
-    total_records int
+    total_vehicles int
 );
 COPY wheelchair_access FROM '/var/lib/postgresql/imports/wheelchair_access.csv' CSV HEADER;
 
@@ -44,22 +44,3 @@ SELECT
 FROM generate_series('2020-01-01'::date, '2025-10-22'::date, interval '1 day') AS s1(ride_date) 
 CROSS JOIN for_hire_vehicles cars 
 );
-
-/* for actual execution times, though setting \timing after connecting to the database
-is easier in that it gets you the output from the sql statement as well. */
-CREATE OR REPLACE FUNCTION "get_sql_runtime"(
-    PAR_sql TEXT,
-    OUT sql_runtime REAL
-)
-AS $$
-DECLARE
-    run_time_start TIMESTAMP WITH TIME ZONE;
-    run_time_end TIMESTAMP WITH TIME ZONE;
-BEGIN
-    SELECT clock_timestamp() INTO run_time_start;
-    EXECUTE PAR_sql;
-    SELECT clock_timestamp() INTO run_time_end;
-    SELECT EXTRACT(EPOCH FROM (run_time_end - run_time_start)) INTO sql_runtime;
-END; $$
-LANGUAGE plpgsql
-VOLATILE;
