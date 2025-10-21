@@ -14,20 +14,9 @@ To run the samples, you'll need to download this github repository, and install 
 
 ## And on to the training!
 
-### Less is more.
+Presentation slides will be uploaded here when they're finalized, but there is lots of
+content in the practice sql files:
 
-- Order of execution
-- Filter as early in the process as possible
-
-### Once and done.
-
-- CTEs
-- avoid correlated subqueries
-- avoid filtering on calculations
-
-### Keep it simple.
-
-- Explain plans
-- Table statistics
-- Indices / partitions
-- Hints
+- [Less is More](samples/less_is_more.sql)
+- [Once and Done](samples/once_and_done.sql)
+- [Simple is Best](samples/simple_is_best.sql)

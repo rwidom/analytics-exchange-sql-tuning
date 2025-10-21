@@ -146,6 +146,10 @@ limit 1;
 
 -- Time: 15.383 ms
 
+explain (select count(*) from fake_rides);
+
+explain (select * from fake_rides limit 10);
+
 /***************************************************************************************
 Logical Order of Execution
 ***************************************************************************************/
