@@ -1,10 +1,9 @@
 /*
 Once and done
 
-- using indexes (so that sorting/sifting through things can be done once, but think 
-about would you save time go to the index or not, explain plan devils in the details.)
+- indexes
 - avoid correlated subqueries
-- CTEs and logical vs materialized views
+- common table expressions
 */
 
 \timing on
@@ -14,9 +13,9 @@ Indexing to make it easier to find things
 ***************************************************************************************/
 
 -- way less then half of the records, but more than half the time to just count
--- the whole table. why? 
+-- the whole table. why?
 select count(*) from fake_rides where departure_time >= '2025-09-01';
---   count  
+--   count
 -- ---------
 --  5452720
 -- (1 row)
@@ -34,7 +33,7 @@ create index ind_departure_time on fake_rides (departure_time);
 -- CREATE INDEX
 -- Time: 108513.257 ms (01:48.513) -- now, we get the same answer in less than a second, rather than more than 20 seconds.
 select count(*) from fake_rides where departure_time >= '2025-09-01';
---   count  
+--   count
 -- ---------
 --  5452720
 -- (1 row)
@@ -57,14 +56,14 @@ from for_hire_vehicles
     join wheelchair_access using (wheelchair_accessible_key)
 where base_key in (
     select base_key
-    from bases 
-    where bases.base_type = 'BLACK-CAR' 
+    from bases
+    where bases.base_type = 'BLACK-CAR'
         and for_hire_vehicles.fhv_name = bases.base_name
 )
 order by fhv_name;
 -- Time: 5468.146 ms (00:05.468)
 
---                                                               QUERY PLAN                                                              
+--                                                               QUERY PLAN
 -- --------------------------------------------------------------------------------------------------------------------------------------
 --  Sort  (cost=1390204.46..1390335.53 rows=52430 width=63)
 --    Sort Key: for_hire_vehicles.fhv_name
@@ -85,14 +84,14 @@ select fhv_name, vehicle_license_number, wheelchair_accessible_desc
 from for_hire_vehicles
     join wheelchair_access using (wheelchair_accessible_key)
 where fhv_name in (
-    select DISTINCT BASE_NAME 
-    from bases 
+    select DISTINCT BASE_NAME
+    from bases
     where base_type = 'BLACK-CAR'
 )
 order by fhv_name;
 -- Time: 31.689 ms
 
---                                                    QUERY PLAN                                                   
+--                                                    QUERY PLAN
 -- ----------------------------------------------------------------------------------------------------------------
 --  Sort  (cost=2567.49..2570.51 rows=1209 width=63)
 --    Sort Key: for_hire_vehicles.fhv_name
@@ -116,10 +115,10 @@ order by fhv_name;
 CTEs and logical vs materialized views
 ***************************************************************************************/
 
-with 
+with
 base_monthly as (
-    select base_name, 
-        date_trunc('month', departure_time)::date departure_month, 
+    select base_name,
+        date_trunc('month', departure_time)::date departure_month,
         sum(fare) as revenue,
         count(*) as rides
     from fake_rides
@@ -147,14 +146,14 @@ above_average as (
     -- always above twice the overall average
     having count(case when revenue > (2 * total_avg_revenue) then 1 end) = 3
 )
-select b.base_name, coalesce(b.website, b.base_telephone_number) base_contact, 
+select b.base_name, coalesce(b.website, b.base_telephone_number) base_contact,
     a.revenue_0925, a.revenue_0825, a.revenue_0725,
     a.total_avg_revenue
 from above_average a join bases b on (a.base_name=b.base_name)
 order by revenue_0925 desc, revenue_0825 desc, revenue_0725 desc
 ;
 
---              base_name             |        base_contact         | revenue_0925 | revenue_0825 | revenue_0725 | total_avg_revenue 
+--              base_name             |        base_contact         | revenue_0925 | revenue_0825 | revenue_0725 | total_avg_revenue
 -- -----------------------------------+-----------------------------+--------------+--------------+--------------+-------------------
 --  UBER USA, LLC                     | (646)780-0129               |    122664458 |    126691290 |    126729748 |            201520
 --  SPACELINKS,LLC                    | WWW.SPACELYNKS.COM          |      1618792 |      1664320 |      1665795 |            201520
@@ -203,5 +202,3 @@ order by revenue_0925 desc, revenue_0825 desc, revenue_0725 desc
 --                                  ->  Aggregate  (cost=245036.71..245036.72 rows=1 width=8)
 --                                        ->  CTE Scan on base_monthly base_monthly_1  (cost=0.00..196029.36 rows=9801468 width=16)
 --                                  ->  CTE Scan on base_monthly  (cost=0.00..196029.36 rows=9801468 width=230)
-
-

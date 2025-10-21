@@ -14,7 +14,7 @@ Compare timing for counts and sample rows across tables of different sizes
 ***************************************************************************************/
 
 select * from wheelchair_access limit 10;
---  wheelchair_accessible_key | wheelchair_accessible_desc | total_vehicles 
+--  wheelchair_accessible_key | wheelchair_accessible_desc | total_vehicles
 -- ---------------------------+----------------------------+----------------
 --                          0 | Missing                    |          96951
 --                          1 | WAV                        |           7432
@@ -24,7 +24,7 @@ select * from wheelchair_access limit 10;
 -- Time: 3.325 ms
 
 select count(*) from wheelchair_access;
---  count 
+--  count
 -- -------
 --      3
 -- (1 row)
@@ -32,9 +32,9 @@ select count(*) from wheelchair_access;
 -- Time: 13.802 ms
 
 SELECT octet_length(t.*::text) sample_text_length
-FROM wheelchair_access AS t 
+FROM wheelchair_access AS t
 limit 1;
---  text_length 
+--  text_length
 -- -------------
 --           17
 -- (1 row)
@@ -42,7 +42,7 @@ limit 1;
 -- Time: 26.976 ms
 
 select * from bases limit 10;
--- base_key | base_number |             base_name             | base_type | base_telephone_number |          website           |                  base_address                  
+-- base_key | base_number |             base_name             | base_type | base_telephone_number |          website           |                  base_address
 -- ----------+-------------+-----------------------------------+-----------+-----------------------+----------------------------+------------------------------------------------
 --      3152 | B03152      | EXIT LUXURY INC.                  | BLACK-CAR | (718)472-9800         |                            | 29 - 10   36 AVENUE LONGISLAND CITY NY 11106
 --      3036 | B03036      | ZYNC INC                          | BLACK-CAR | (718)482-1818         |                            | 12-04   44 AVENUE LIC NY 11101
@@ -59,7 +59,7 @@ select * from bases limit 10;
 -- Time: 16.465 ms
 
 select count(*) from bases;
---  count 
+--  count
 -- -------
 --    812
 -- (1 row)
@@ -67,9 +67,9 @@ select count(*) from bases;
 -- Time: 20.614 ms
 
 SELECT octet_length(t.*::text) sample_text_length
-FROM bases AS t 
+FROM bases AS t
 limit 1;
---  sample_text_length 
+--  sample_text_length
 -- --------------------
 --                 106
 -- (1 row)
@@ -77,7 +77,7 @@ limit 1;
 -- Time: 16.961 ms
 
 select * from for_hire_vehicles limit 10;
---  vehicle_license_number | base_key | wheelchair_accessible_key |      fhv_name      | expiration_date | permit_license_number | dmv_license_plate_number | vehicle_year 
+--  vehicle_license_number | base_key | wheelchair_accessible_key |      fhv_name      | expiration_date | permit_license_number | dmv_license_plate_number | vehicle_year
 -- ------------------------+----------+---------------------------+--------------------+-----------------+-----------------------+--------------------------+--------------
 --  6032728                |     3152 |                         2 | UPPAL, ARSHDEEP    | 2026-06-30      | AA005                 | T117661C                 |         2022
 --  5953896                |     3036 |                         0 | ELIHORI,ASIM,SALIH | 2025-11-07      | AA006                 | T790912C                 |         2015
@@ -94,7 +94,7 @@ select * from for_hire_vehicles limit 10;
 -- Time: 6.299 ms
 
 select count(*) from for_hire_vehicles;
---  count  
+--  count
 -- --------
 --  104860
 -- (1 row)
@@ -102,9 +102,9 @@ select count(*) from for_hire_vehicles;
 -- Time: 142.584 ms
 
 SELECT octet_length(t.*::text) sample_text_length
-FROM for_hire_vehicles AS t 
+FROM for_hire_vehicles AS t
 limit 1;
---  sample_text_length 
+--  sample_text_length
 -- --------------------
 --                  65
 -- (1 row)
@@ -112,7 +112,7 @@ limit 1;
 -- Time: 8.860 ms
 
 select * from fake_rides limit 10;
---  vehicle_license_number |       departure_time       | fare | distance 
+--  vehicle_license_number |       departure_time       | fare | distance
 -- ------------------------+----------------------------+------+----------
 --  5807501                | 2020-01-11 03:42:39.326252 |   92 |       12
 --  5799617                | 2020-01-11 15:52:51.192193 |    7 |       16
@@ -129,7 +129,7 @@ select * from fake_rides limit 10;
 -- Time: 17.404 ms
 
 select count(*) from fake_rides;
---    count   
+--    count
 -- -----------
 --  222512920
 -- (1 row)
@@ -137,9 +137,9 @@ select count(*) from fake_rides;
 -- Time: 27021.725 ms (00:27.022)
 
 SELECT octet_length(t.*::text) sample_text_length
-FROM fake_rides AS t 
+FROM fake_rides AS t
 limit 1;
---  sample_text_length 
+--  sample_text_length
 -- --------------------
 --                  44
 -- (1 row)
@@ -154,7 +154,7 @@ explain (select * from fake_rides limit 10);
 Logical Order of Execution
 ***************************************************************************************/
 
-select 
+select
     -- 6. DISTINCT
     distinct
     -- 5. SELECT
@@ -176,12 +176,12 @@ limit 10;
 
 -- Moving the filter to the subquery here does not change the optimizer plan, because
 -- they are logically the same.
-select 
+select
     distinct
     wheelchair_accessible_key, wheelchair_accessible_desc,
     count(*) records
 from for_hire_vehicles
-    join (select * from bases where base_type = 'BLACK-CAR') bases 
+    join (select * from bases where base_type = 'BLACK-CAR') bases
         using (base_key)
     join wheelchair_access using (wheelchair_accessible_key)
 group by wheelchair_accessible_key, wheelchair_accessible_desc
@@ -201,13 +201,13 @@ from fake_rides
     join wheelchair_access using (wheelchair_accessible_key)
 where wheelchair_accessible_desc='PILOT' and fare<wheelchair_accessible_key
 group by wheelchair_accessible_key, wheelchair_accessible_desc;
---  wheelchair_accessible_key | wheelchair_accessible_desc | pilot_ride_count 
+--  wheelchair_accessible_key | wheelchair_accessible_desc | pilot_ride_count
 -- ---------------------------+----------------------------+------------------
 --                          2 | PILOT                      |            10167
 -- (1 row)
 
 -- Time: 36302.501 ms (00:36.303)
---                                                               QUERY PLAN                                                                 
+--                                                               QUERY PLAN
 -- -------------------------------------------------------------------------------------------------------------------------------------------
 --  Finalize GroupAggregate  (cost=2692194.56..2693878.91 rows=18 width=50)
 --    Group Key: for_hire_vehicles.wheelchair_accessible_key, wheelchair_access.wheelchair_accessible_desc
@@ -242,13 +242,13 @@ from fake_rides
     join wheelchair_access using (wheelchair_accessible_key)
 where wheelchair_accessible_desc='PILOT' and fare<2
 group by wheelchair_accessible_key, wheelchair_accessible_desc;
---  wheelchair_accessible_key | wheelchair_accessible_desc | pilot_ride_count 
+--  wheelchair_accessible_key | wheelchair_accessible_desc | pilot_ride_count
 -- ---------------------------+----------------------------+------------------
 --                          2 | PILOT                      |            10167
 -- (1 row)
 
 -- Time: 26505.659 ms (00:26.506)
---                                                                   QUERY PLAN                                                                  
+--                                                                   QUERY PLAN
 -- ----------------------------------------------------------------------------------------------------------------------------------------------
 --  Finalize GroupAggregate  (cost=2582964.82..2583020.49 rows=18 width=50)
 --    Group Key: for_hire_vehicles.wheelchair_accessible_key, wheelchair_access.wheelchair_accessible_desc
@@ -279,9 +279,9 @@ group by wheelchair_accessible_key, wheelchair_accessible_desc;
 select (case when fare<2 then 'include' else 'exclude' end) fare_filter,
     count(*) fake_ride_records, max(fare) max_fare
 from fake_rides
-group by (case when fare<2 then 'include' else 'exclude' end) 
+group by (case when fare<2 then 'include' else 'exclude' end)
 order by 2;
---  fare_filter | fake_ride_records | max_fare 
+--  fare_filter | fake_ride_records | max_fare
 -- -------------+-------------------+----------
 --  include     |           2226108 |        1
 --  exclude     |         220286812 |      100
