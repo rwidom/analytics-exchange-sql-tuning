@@ -14,8 +14,7 @@ To run the samples, you'll need to download this github repository, and install 
 
 ## And on to the training!
 
-Presentation slides will be uploaded here when they're finalized, but there is lots of
-content in the practice sql files:
+Link to full presentation coming soon, and there is lots of content in the practice sql files:
 
 - [Less is More](samples/less_is_more.sql)
 - [Once and Done](samples/once_and_done.sql)
