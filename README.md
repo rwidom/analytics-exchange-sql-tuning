@@ -14,7 +14,7 @@ To run the samples, you'll need to download this github repository, and install 
 
 ## And on to the training!
 
-Link to full presentation coming soon, and there is lots of content in the practice sql files:
+Powerpoint slides are [here](presentation_analytics_exchange_2025_widomr.pdf), and there is content in the practice sql files as well:
 
 - [Less is More](samples/less_is_more.sql)
 - [Once and Done](samples/once_and_done.sql)
